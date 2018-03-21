@@ -5,8 +5,7 @@
 exports.index = (req, res) => {
   console.log(req);
   res.render('home', {
-    title: 'Home',
-    board: board
+    title: 'Home'
   });
 };
 
@@ -44,16 +43,14 @@ exports.getInvite = (req, res) => {
     },
   ]
 
-  
   if(req.session.rows>0){
-    console.log(req.session.rows);
-    res.status(200).send({'row':req.session.rows});
+    res.status(200).send(false);
   }else{
     //Save to session
     req.session.rows= 20;
     req.session.cols= 10;
-    req.session.gameBoard= [];
     req.session.ships= ships;
+    req.session.enemyBoard =generateGameBoard(req.session.rows, req.session.cols);
     //Response
     res.status(200).send(true);
   }
@@ -241,14 +238,7 @@ exports.getPlaceShips = (req, res) => {
   var ships=req.session.ships;
 
   //Prepare empty board
-  var gameBoard = [];
-  for(i = 0; i < rows; i++){
-    var col = [];
-    for (j = 0; j < cols; j++) {
-      col.push(0);							
-    }
-    gameBoard.push(col);
-  }
+  var gameBoard = generateGameBoard(rows, cols);
 
   var response= {
     ships: []
@@ -274,8 +264,20 @@ exports.getPlaceShips = (req, res) => {
   }
 
   req.session.gameBoard=gameBoard;
-
-  response.gameBoard = gameBoard;
+  //response.gameBoard = gameBoard;  
   res.status(200).send(response);
 };
+
+var generateGameBoard = function(rows, cols){
+  //Prepare empty board
+  var gameBoard = [];
+  for(i = 0; i < rows; i++){
+    var col = [];
+    for (j = 0; j < cols; j++) {
+      col.push(0);							
+    }
+    gameBoard.push(col);
+  }
+  return gameBoard;
+}
 

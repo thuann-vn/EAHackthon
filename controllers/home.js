@@ -21,8 +21,13 @@ exports.getInvite = (req, res) => {
   req.session.cols = params.boardHeight;
   req.session.ships = params.ships;
   req.session.enemyBoard = generateGameBoard(req.session.rows, req.session.cols);
+ 
   //Response
-  res.sendStatus(200);
+  if(params.debug){
+    res.status(200).send(req.session);
+  }else{
+    res.sendStatus(200);
+  }
 }
 
 /**
@@ -33,8 +38,6 @@ exports.getPlaceShips = (req, res) => {
   var params = req.body;
   req.session.player1 = params.player1;
   req.session.player2 = params.player2;
-  console.log(process.env.ENGINE_NAME);
-  console.log(req.session.enemyBoard);
 
   var rows = req.session.rows;
   var cols = req.session.cols;
@@ -314,7 +317,11 @@ exports.getNotify = (req, res) => {
   }
 
   //Response
-  res.sendStatus(200);
+  if(params.debug){
+    res.status(200).send(req.session);
+  }else{
+    res.sendStatus(200);
+  }
 }
 
 //Generate blank game board

@@ -10,60 +10,32 @@ exports.index = (req, res) => {
 };
 
 /**
- * GET /
+ * POST /
  * Invite
  */
 exports.getInvite = (req, res) => {
-  // generate position
-  // CV = carrier
-  // BB = battleship
-  // CA = cruiser
-  // DD = destroyer
-  // OR = oil rig
-  console.log(typeof req.body);
   var params = req.body;
-  // var ships=[
-  //   {
-  //     'type': 'CV',
-  //     'quantity': 2
-  //   },
-  //   {
-  //     'type': 'BB',
-  //     'quantity': 1
-  //   },
-  //   {
-  //     'type': 'CA',
-  //     'quantity': 1
-  //   },
-  //   {
-  //     'type': 'DD',
-  //     'quantity': 1
-  //   },
-  //   {
-  //     'type': 'OR',
-  //     'quantity': 1
-  //   },
-  // ]
-  var ships = params.ships;
 
-  if (req.session.rows > 0) {
-    res.status(200).send(req.session);
-  } else {
-    //Save to session
-    req.session.rows = params.boardWidth;
-    req.session.cols = params.boardHeight;
-    req.session.ships = ships;
-    req.session.enemyBoard = generateGameBoard(req.session.rows, req.session.cols);
-    //Response
-    res.status(200).send(req.session);
-  }
+  //Save to session
+  req.session.rows = params.boardWidth;
+  req.session.cols = params.boardHeight;
+  req.session.ships = params.ships;
+  req.session.enemyBoard = generateGameBoard(req.session.rows, req.session.cols);
+  //Response
+  res.sendStatus(200);
 }
 
 /**
- * GET /
+ * POST /
  * Invite
  */
 exports.getPlaceShips = (req, res) => {
+  var params = req.body;
+  req.session.player1 = params.player1;
+  req.session.player2 = params.player2;
+  console.log(process.env.ENGINE_NAME);
+  console.log(req.session.enemyBoard);
+
   var rows = req.session.rows;
   var cols = req.session.cols;
 
@@ -266,6 +238,86 @@ exports.getPlaceShips = (req, res) => {
   res.status(200).send(response);
 };
 
+/**
+ * POST /
+ * Shoot
+ */
+exports.getShoot = (req, res) => {
+  var params = req.body;
+
+  //Save to session
+  req.session.turn = params.turn;
+  req.session.maxShots = params.maxShots;
+  var enemyBoard = req.session.enemyBoard;
+
+  if(req.session.findingShips){
+
+  }else{
+
+  }
+
+
+  //Response
+  res.status(200).send(req.session);
+}
+
+/**
+ * POST /
+ * Notify
+ */
+exports.getNotify = (req, res) => {
+  var params = req.body;
+
+  //OUR TURN RESULT
+  if(params.playerId == process.env.ENGINE_NAME){
+    var enemyBoard = req.session.enemyBoard;
+
+    //Update shots
+    if(params.shots){
+      for(var i=0; i<params.shots.length; i++){
+        var shot= params.shots[i];
+
+        //If shot is HIT
+        if(shot.status=="HIT"){
+          enemyBoard[shot.coordinate[0]][shot.coordinate[1]] = 1;
+
+          //If HIT then check if ship still not SUNK => try to find the ship in next turn
+          if(params.sunkShips.length>0){
+            req.session.findingShips= true;
+          }
+        }else{
+          enemyBoard[shot.coordinate[0]][shot.coordinate[1]] = -1;
+        }
+      }
+    }
+
+    //Update sunkShips
+    if (params.sunkShips) {
+      //Update sunkShips
+      req.session.sunkShips = (req.session.sunkShips)?req.session.sunkShips.concat(params.sunkShips):params.sunkShips;
+
+      //Update to enemyBoard
+      for (var s = 0; s < params.sunkShips.length; s++) {
+        var sunkShip = params.sunkShips[s];
+        for (var c = 0; c < sunkShip.coordinates.length; c++) {
+          var coordinate = sunkShip.coordinates[c];
+          enemyBoard[coordinate[0]][coordinate[1]] = 1;
+        }
+      }
+    }
+    req.session.enemyBoard=enemyBoard;
+    console.log(req.session.enemyBoard);
+  //ENEMY TURN RESULT
+  }else{
+    console.log('Enemy shot status');
+    console.log(params);
+  }
+
+  //Response
+  res.sendStatus(200);
+}
+
+//Generate blank game board
 var generateGameBoard = function (rows, cols) {
   //Prepare empty board
   var gameBoard = [];

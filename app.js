@@ -117,8 +117,8 @@ app.get('/', homeController.index);
 /**
  * API routes.
  */
-app.get('/invite', homeController.getInvite);
-app.get('/place-ships', homeController.getPlaceShips);
+app.post('/invite', homeController.getInvite);
+app.post('/place-ships', homeController.getPlaceShips);
 
 /**
  * Error Handler.

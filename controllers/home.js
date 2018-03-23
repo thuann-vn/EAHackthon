@@ -21,11 +21,11 @@ exports.getInvite = (req, res) => {
   req.session.cols = params.boardHeight;
   req.session.ships = params.ships;
   req.session.enemyBoard = generateGameBoard(req.session.rows, req.session.cols);
- 
+
   //Response
-  if(params.debug){
+  if (params.debug) {
     res.status(200).send(req.session);
-  }else{
+  } else {
     res.sendStatus(200);
   }
 }
@@ -43,7 +43,7 @@ exports.getPlaceShips = (req, res) => {
   var cols = req.session.cols;
 
   // get position list can use
-  var checkIfBlankPosition = function (startPointX, startPointY, shipType, verticalDirection) {
+  var checkIfBlankPosition = function (startPointX, startPointY, shipType, verticalDirection, gameBoard) {
     if (!verticalDirection) {
       switch (shipType) {
         case 'BB': //Ship 4 pieces
@@ -187,58 +187,109 @@ exports.getPlaceShips = (req, res) => {
     return false;
   }
 
+
   //@param direction: 0:Vertical, 1: Horizon
-  var getBlankPositions = function (shipType, verticalDirection) {
-    var result = [];
-    for (x = 0; x < rows; x++) {
-      for (y = 0; y < cols; y++) {
-        var arrayPositions = checkIfBlankPosition(x, y, shipType, verticalDirection);
-        if (arrayPositions != false) {
-          result.push(arrayPositions);
+  var getRandomCoordinate = function (shipType, verticalDirection, gameBoard) {
+    var isValid = false;
+    while (!isValid) {
+      var minX = 0;
+      var maxX = req.session.rows - 1;
+      var x = Math.floor(Math.random() * (maxX - minX)) + minX;
+
+      var minY = 0;
+      var maxY = req.session.rows - 1;
+      var y = Math.floor(Math.random() * (maxY - minY)) + minY;
+
+      var position = checkIfBlankPosition(x, y, shipType, verticalDirection, gameBoard);
+      if (position) {
+        return position;
+      }
+    }
+    return [];
+  }
+
+  //@param direction: 0:Vertical, 1: Horizon
+  // var getBlankPositions = function (shipType, verticalDirection) {
+  //   var result = [];
+  //   for (x = 0; x < rows; x++) {
+  //     for (y = 0; y < cols; y++) {
+  //       var arrayPositions = checkIfBlankPosition(x, y, shipType, verticalDirection);
+  //       if (arrayPositions != false) {
+  //         result.push(arrayPositions);
+  //       }
+  //     }
+  //   }
+  //   return result;
+  // }
+
+  //Get random position in blanks list
+  // function getRandomPosition(positions) {
+  //   min = 0;
+  //   max = positions.length - 1;
+  //   return positions[Math.floor(Math.random() * (max - min)) + min];
+  // }
+
+  var ships = req.session.ships;
+  //Arrage ships, return false if can not arrange a ship, return object have gameboard and ships if valid
+  var arrangeShips = function (triedTime) {
+    var arrangedShips = [];
+    var gameBoard = generateGameBoard(rows, cols);
+    //Get position for per ships
+    for (var k = 0; k < ships.length; k++) {
+      for (var l = 0; l < ships[k].quantity; l++) {
+        var verticalDirection = Math.random() >= 0.5;
+        var position = getRandomCoordinate(ships[k].type, verticalDirection, gameBoard);
+        if (position.length > 0) {
+          for (var i = 0; i < position.length; i++) {
+            var x = position[i][0];
+            var y = position[i][1];
+
+            gameBoard[x][y] = 1;
+          }
+
+          //Add to response
+          arrangedShips.push({
+            'type': ships[k].type,
+            'coordinates': position
+          });
+        } else {
+          console.log('Arrange Ships Failed ('+triedTime+' times)');
+          console.log({ gameBoard: gameBoard, ships: arrangedShips });
+          return false;
         }
       }
     }
-    return result;
+    return { gameBoard: gameBoard, ships: arrangedShips };
   }
 
-  //Get random position in blanks list
-  function getRandomPosition(positions) {
-    min = 0;
-    max = positions.length - 1;
-    return positions[Math.floor(Math.random() * (max - min)) + min];
-  }
+  var gameBoard = null;
+  var arrangedShips=[];
+  var arrangeShipTriedCount = 0;
 
-  var ships = req.session.ships;
-
-  //Prepare empty board
-  var gameBoard = generateGameBoard(rows, cols);
-
-  var response = {
-    ships: []
-  };
-
-  for (var k = 0; k < ships.length; k++) {
-    for (var l = 0; l < ships[k].quantity; l++) {
-      var verticalDirection = Math.random() >= 0.5;
-      var positions = getBlankPositions(ships[k].type, verticalDirection);
-      var setPosition = getRandomPosition(positions);
-      response.ships.push({
-        'type': ships[k].type,
-        'coordinates': setPosition
-      });
-
-      for (var i = 0; i < setPosition.length; i++) {
-        var x = setPosition[i][0];
-        var y = setPosition[i][1];
-
-        gameBoard[x][y] = 1;
-      }
+  while (!gameBoard) {
+    arrangeShipTriedCount++;
+    var result = arrangeShips(arrangeShipTriedCount);
+    if (result != false) {
+      gameBoard = result.gameBoard;
+      arrangedShips = result.ships;
     }
   }
 
   req.session.gameBoard = gameBoard;
-  //response.gameBoard = gameBoard;  
-  res.status(200).send(response);
+  req.session.ourShips = arrangedShips;
+
+  //Return response
+  if(params.debug==true){
+    console.log(gameBoard);
+    res.status(200).send( {
+      ships: arrangedShips,
+      board: gameBoard
+    });
+  }else{
+    res.status(200).send( {
+      ships: arrangedShips
+    });
+  }
 };
 
 /**
@@ -253,9 +304,9 @@ exports.getShoot = (req, res) => {
   req.session.maxShots = params.maxShots;
   var enemyBoard = req.session.enemyBoard;
 
-  if(req.session.findingShips){
+  if (req.session.findingShips) {
 
-  }else{
+  } else {
 
   }
 
@@ -272,23 +323,23 @@ exports.getNotify = (req, res) => {
   var params = req.body;
 
   //OUR TURN RESULT
-  if(params.playerId == process.env.ENGINE_NAME){
+  if (params.playerId == process.env.ENGINE_NAME) {
     var enemyBoard = req.session.enemyBoard;
 
     //Update shots
-    if(params.shots){
-      for(var i=0; i<params.shots.length; i++){
-        var shot= params.shots[i];
+    if (params.shots) {
+      for (var i = 0; i < params.shots.length; i++) {
+        var shot = params.shots[i];
 
         //If shot is HIT
-        if(shot.status=="HIT"){
+        if (shot.status == "HIT") {
           enemyBoard[shot.coordinate[0]][shot.coordinate[1]] = 1;
 
           //If HIT then check if ship still not SUNK => try to find the ship in next turn
-          if(params.sunkShips.length>0){
-            req.session.findingShips= true;
+          if (params.sunkShips.length > 0) {
+            req.session.findingShips = true;
           }
-        }else{
+        } else {
           enemyBoard[shot.coordinate[0]][shot.coordinate[1]] = -1;
         }
       }
@@ -297,7 +348,7 @@ exports.getNotify = (req, res) => {
     //Update sunkShips
     if (params.sunkShips) {
       //Update sunkShips
-      req.session.sunkShips = (req.session.sunkShips)?req.session.sunkShips.concat(params.sunkShips):params.sunkShips;
+      req.session.sunkShips = (req.session.sunkShips) ? req.session.sunkShips.concat(params.sunkShips) : params.sunkShips;
 
       //Update to enemyBoard
       for (var s = 0; s < params.sunkShips.length; s++) {
@@ -308,18 +359,18 @@ exports.getNotify = (req, res) => {
         }
       }
     }
-    req.session.enemyBoard=enemyBoard;
+    req.session.enemyBoard = enemyBoard;
     console.log(req.session.enemyBoard);
-  //ENEMY TURN RESULT
-  }else{
+    //ENEMY TURN RESULT
+  } else {
     console.log('Enemy shot status');
     console.log(params);
   }
 
   //Response
-  if(params.debug){
+  if (params.debug) {
     res.status(200).send(req.session);
-  }else{
+  } else {
     res.sendStatus(200);
   }
 }

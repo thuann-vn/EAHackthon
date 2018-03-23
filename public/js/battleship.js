@@ -14,7 +14,7 @@ var inviteParams= {
 	"ships": [
     {
       "type": "CV",
-      "quantity": 5
+      "quantity": 1
     },
     {
       "type": "BB",
@@ -22,15 +22,15 @@ var inviteParams= {
     },
     {
       "type": "CA",
-      "quantity": 2
+      "quantity": 1
     },
     {
       "type": "DD",
-      "quantity": 2
+      "quantity": 1
     },
     {
       "type": "OR",
-      "quantity": 2
+      "quantity": 1
     }
   ]
 };
@@ -82,6 +82,10 @@ var initGameBoard= function(gameBoard){
 	// make the grid columns and rows
 	for (i = 0; i < rows; i++) {
 		for (j = 0; j < cols; j++) {
+			var valid= true;
+			if($('#s' + i + j).length){
+				valid=false;
+			}
 			// create a new div HTML element for each grid square and make it the right size
 			var square = document.createElement("div");
 			gameBoardContainer.appendChild(square);
@@ -98,7 +102,10 @@ var initGameBoard= function(gameBoard){
 			square.style.left = leftPosition + 'px';
 			if(gameBoard[i][j]==1){
 				square.style.background = 'red';
-			}						
+			}	
+			if(valid==false){
+				square.style.background = 'yellow';
+			}					
 		}
 	}
 }

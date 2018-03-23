@@ -217,7 +217,7 @@ exports.getPlaceShips = (req, res) => {
     var gameBoard = generateGameBoard(boardHeight, boardWidth);
     //Get position for per ships
     for (var k = 0; k < ships.length; k++) {
-      for (var l = 0; l < ships[k].quantity; l++) {
+      for (var l = 0; l < parseInt(ships[k].quantity) ; l++) {
         var verticalDirection = Math.random() >= 0.5;
         var position = getRandomCoordinate(ships[k].type, verticalDirection, gameBoard);
         if (position.length > 0) {

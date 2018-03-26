@@ -43,29 +43,33 @@ exports.getPlaceShips = (req, res) => {
 
   //Opitimize position
   var optimizePosition = function (arrangedShips, gameBoard) {
-    var results = [];
-    for (var i = 0; i < arrangedShips.length; i++) {
-      var ship = arrangedShips[i];
-      var ramdomRange = Math.random() >= 0.5 ? 2 : 1;
-
-      //Check arround ship
-      var newCoordinates = swapPositions(ship, gameBoard, ramdomRange);
-
-      //Update old coorinates to zero
-      for (var j = 0; j < ship.coordinates.length; j++) {
-        var coordinate = ship.coordinates[j];
-        gameBoard[coordinate[0]][coordinate[1]] = 0;
+    try{
+      var results = [];
+      for (var i = 0; i < arrangedShips.length; i++) {
+        var ship = arrangedShips[i];
+        var ramdomRange = Math.random() >= 0.5 ? 2 : 1;
+  
+        //Check arround ship
+        var newCoordinates = swapPositions(ship, gameBoard, ramdomRange);
+  
+        //Update old coorinates to zero
+        for (var j = 0; j < ship.coordinates.length; j++) {
+          var coordinate = ship.coordinates[j];
+          gameBoard[coordinate[0]][coordinate[1]] = 0;
+        }
+  
+        // Update current coorinates
+        for (var j = 0; j < newCoordinates.length; j++) {
+          var coordinate = newCoordinates[j];
+          gameBoard[coordinate[0]][coordinate[1]] = 1;
+        }
+  
+        ship.coordinates=newCoordinates;
       }
-
-      // Update current coorinates
-      for (var j = 0; j < newCoordinates.length; j++) {
-        var coordinate = newCoordinates[j];
-        gameBoard[coordinate[0]][coordinate[1]] = 1;
-      }
-
-      ship.coordinates=newCoordinates;
+      return {gameBoard: gameBoard, ships:arrangedShips};
+    }catch(ex){
+      return {gameBoard: gameBoard, ships:arrangedShips};
     }
-    return {gameBoard: gameBoard, ships:arrangedShips};
   }
 
   //get arround points matrix

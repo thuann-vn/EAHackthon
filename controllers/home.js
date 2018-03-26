@@ -41,6 +41,39 @@ exports.getPlaceShips = (req, res) => {
   var boardHeight = parseInt(req.session.boardHeight);
   var boardWidth = parseInt(req.session.boardWidth);
 
+  //check if around points is valid
+  var SwapPosition= function(startPointX, startPointY, shipType, verticalDirection, gameBoard){
+    switch (shipType) {
+      case 'BB': //Ship 4 pieces
+        if (startPointX + 3 > boardHeight - 1) {
+          return false;
+        }
+        break;
+      case 'DD': //Ship 2 pieces
+        if (startPointX + 1 > boardHeight - 1) {
+          return false;
+        }
+        break;
+
+      case 'CA': //Ship 3 pieces
+        if (startPointX + 2 > boardHeight - 1) {
+          return false;
+        }
+        break;
+      case 'CV': //Ship 5 pieces
+        if (startPointX + 3 > boardHeight - 1 || startPointY - 1 < 0) {
+          return false;
+        }
+        break;2
+      case 'OR': //Ship square
+        if (startPointX + 1 > boardHeight - 1 || startPointY + 1 > boardWidth - 1) {
+          return false;
+        }
+        break;
+    }
+    return true;
+  }
+
   // get position list can use
   var checkIfBlankPosition = function (startPointX, startPointY, shipType, verticalDirection, gameBoard) {
     try{
@@ -89,7 +122,7 @@ exports.getPlaceShips = (req, res) => {
               return false;
             }
   
-            if (gameBoard[startPointX][startPointY] == 0 && gameBoard[startPointX + 1][startPointY] == 0 && gameBoard[startPointX + 2][startPointY] == 0 && gameBoard[startPointX + 3][startPointY] == 0 && gameBoard[startPointX + 2][startPointY + 1] == 0) {
+            if (gameBoard[startPointX][startPointY] == 0 && gameBoard[startPointX + 1][startPointY] == 0 && gameBoard[startPointX + 2][startPointY] == 0 && gameBoard[startPointX + 3][startPointY] == 0 && gameBoard[startPointX + 1][startPointY - 1] == 0) {
               return [
                 [startPointX, startPointY],
                 [startPointX + 1, startPointY],
@@ -98,7 +131,7 @@ exports.getPlaceShips = (req, res) => {
                 [startPointX + 1, startPointY - 1]
               ]
             }
-            break;
+            break;2
           case 'OR': //Ship square
             if (startPointX + 1 > boardHeight - 1 || startPointY + 1 > boardWidth - 1) {
               return false;
@@ -158,7 +191,7 @@ exports.getPlaceShips = (req, res) => {
               return false;
             }
   
-            if (gameBoard[startPointX][startPointY] == 0 && gameBoard[startPointX][startPointY + 1] == 0 && gameBoard[startPointX][startPointY + 2] == 0 && gameBoard[startPointX][startPointY + 3] == 0 && gameBoard[startPointX - 1][startPointY] == 0) {
+            if (gameBoard[startPointX][startPointY] == 0 && gameBoard[startPointX][startPointY + 1] == 0 && gameBoard[startPointX][startPointY + 2] == 0 && gameBoard[startPointX][startPointY + 3] == 0 && gameBoard[startPointX - 1][startPointY+2] == 0) {
               return [
                 [startPointX, startPointY],
                 [startPointX, startPointY + 1],
@@ -240,6 +273,7 @@ exports.getPlaceShips = (req, res) => {
         }
       }
     }
+
     return { gameBoard: gameBoard, ships: arrangedShips };
   }
 

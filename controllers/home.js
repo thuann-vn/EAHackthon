@@ -431,9 +431,7 @@ exports.getPlaceShips = (req, res) => {
   }
 
   //Optimize gameboard
-  console.log(gameBoard);
   optimizeResult = optimizePosition(arrangedShips, gameBoard);
-  console.log(gameBoard);
 
   req.session.gameBoard = gameBoard;
   req.session.ourShips = arrangedShips;
@@ -516,7 +514,6 @@ exports.getNotify = (req, res) => {
       }
     }
     req.session.enemyBoard = enemyBoard;
-    console.log(req.session.enemyBoard);
     //ENEMY TURN RESULT
   } else {
     console.log('Enemy shot status');

@@ -122,13 +122,13 @@ exports.getPlaceShips = (req, res) => {
               return false;
             }
   
-            if (gameBoard[startPointX][startPointY] == 0 && gameBoard[startPointX + 1][startPointY] == 0 && gameBoard[startPointX + 2][startPointY] == 0 && gameBoard[startPointX + 3][startPointY] == 0 && gameBoard[startPointX + 1][startPointY - 1] == 0) {
+            if (gameBoard[startPointX][startPointY] == 0 && gameBoard[startPointX + 1][startPointY] == 0 && gameBoard[startPointX + 2][startPointY] == 0 && gameBoard[startPointX + 3][startPointY] == 0 && gameBoard[startPointX + 2][startPointY - 1] == 0) {
               return [
                 [startPointX, startPointY],
                 [startPointX + 1, startPointY],
                 [startPointX + 2, startPointY],
                 [startPointX + 3, startPointY],
-                [startPointX + 1, startPointY - 1]
+                [startPointX + 2, startPointY - 1]
               ]
             }
             break;2

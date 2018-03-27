@@ -14,7 +14,7 @@ var inviteParams= {
 	"ships": [
     {
       "type": "CV",
-      "quantity": 1
+      "quantity": 2
     },
     {
       "type": "BB",
@@ -22,11 +22,11 @@ var inviteParams= {
     },
     {
       "type": "CA",
-      "quantity": 1
+      "quantity": 2
     },
     {
       "type": "DD",
-      "quantity": 1
+      "quantity": 2
     },
     {
       "type": "OR",

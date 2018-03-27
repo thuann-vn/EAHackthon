@@ -48,10 +48,24 @@ exports.getPlaceShips = (req, res) => {
       for (var i = 0; i < arrangedShips.length; i++) {
         var ship = arrangedShips[i];
         var ramdomRange = Math.random() >= 0.5 ? 2 : 1;
-  
+        
+        //Try to move to 2 range
+        var newCoordinates = swapPositions(ship, gameBoard, 2);
+        
+        //Check if new Coodinates is valid
+        var isMoved = false;
+        for (var j = 0; j < newCoordinates.length; j++) {
+          if(newCoordinates[j]!=ship.coordinates[j]){
+            isMoved = true;
+            break;
+          }
+        }
+
         //Check arround ship
-        var newCoordinates = swapPositions(ship, gameBoard, ramdomRange);
-  
+        if(isMoved == false){
+          var newCoordinates = swapPositions(ship, gameBoard, 1);
+        }
+
         //Update old coorinates to zero
         for (var j = 0; j < ship.coordinates.length; j++) {
           var coordinate = ship.coordinates[j];
@@ -68,8 +82,18 @@ exports.getPlaceShips = (req, res) => {
       }
       return {gameBoard: gameBoard, ships:arrangedShips};
     }catch(ex){
+      console.warn('Error on optimize ships',[ex]);
       return {gameBoard: gameBoard, ships:arrangedShips};
     }
+  }
+
+  var checkCoordinateInArray=function(pointX, pointY, coordinates){
+    for(var k = 0; k < coordinates.length; k++){
+      if(coordinates[k][0]==pointX & coordinates[k][1]==pointY){
+        return true;
+      }
+    }
+    return false;
   }
 
   //get arround points matrix
@@ -92,14 +116,14 @@ exports.getPlaceShips = (req, res) => {
         var checkPrevPointY = pointY - j;
 
         if (checkNextPointX <= maxX && checkNextPointY <= maxY) {
-          if (gameBoard[checkNextPointX][checkNextPointY] == 1) {
+          if (!checkCoordinateInArray(checkNextPointX, checkNextPointY, coordinates) && gameBoard[checkNextPointX][checkNextPointY] == 1) {
             return true;
           }
         }
 
         //Check prev point has ship
         if (checkPrevPointX >= 0 && checkPrevPointY >= 0) {
-          if (gameBoard[checkPrevPointX][checkPrevPointY] == 1) {
+          if (!checkCoordinateInArray(checkPrevPointX, checkPrevPointY, coordinates) && gameBoard[checkPrevPointX][checkPrevPointY] == 1) {
             return true;
           }
         }
@@ -107,14 +131,14 @@ exports.getPlaceShips = (req, res) => {
 
         //Check prev point has ship
         if (checkPrevPointX >= 0 && checkNextPointY <= maxY) {
-          if (gameBoard[checkPrevPointX][checkNextPointY] == 1) {
+          if (!checkCoordinateInArray(checkPrevPointX, checkNextPointY, coordinates) && gameBoard[checkPrevPointX][checkNextPointY] == 1) {
             return true;
           }
         }
 
         //Check prev point has ship
         if (checkNextPointX <= maxX && checkPrevPointY >= 0) {
-          if (gameBoard[checkNextPointX][checkPrevPointY] == 1) {
+          if (!checkCoordinateInArray(checkNextPointX, checkPrevPointY, coordinates) && gameBoard[checkNextPointX][checkPrevPointY] == 1) {
             return true;
           }
         }
@@ -122,7 +146,7 @@ exports.getPlaceShips = (req, res) => {
 
         //Check prev point has ship
         if (pointX <= maxX && checkPrevPointY >= 0) {
-          if (gameBoard[pointX][checkPrevPointY] == 1) {
+          if (!checkCoordinateInArray(pointX, checkPrevPointY, coordinates) && gameBoard[pointX][checkPrevPointY] == 1) {
             return true;
           }
         }
@@ -130,7 +154,7 @@ exports.getPlaceShips = (req, res) => {
 
         //Check prev point has ship
         if (pointX <= maxX && checkNextPointY <= maxY) {
-          if (gameBoard[pointX][checkNextPointY] == 1) {
+          if (!checkCoordinateInArray(pointX, checkNextPointY, coordinates) && gameBoard[pointX][checkNextPointY] == 1) {
             return true;
           }
         }
@@ -149,8 +173,8 @@ exports.getPlaceShips = (req, res) => {
 
     //Check if the position can move to
     //Try to move to the top
-    while (newStartPointX - ramdomRange >= 0) {
-      newStartPointX = newStartPointX - ramdomRange;
+    while (newStartPointX - 1 >= 0) {
+      newStartPointX = newStartPointX - 1;
       var newPosition = checkIfBlankPosition(newStartPointX, startPointY, ship.type, ship.vertical, gameBoard);
       if (newPosition != false && checkHasNearShip(ship.type, newPosition, gameBoard, ramdomRange) == false) {
         return newPosition;
@@ -161,8 +185,8 @@ exports.getPlaceShips = (req, res) => {
     //Try to move to the bottom
     newStartPointX = startPointX;
     newStartPointY = startPointY;
-    while (newStartPointX + ramdomRange < boardHeight) {
-      newStartPointX = newStartPointX + ramdomRange;
+    while (newStartPointX + 1 < boardHeight) {
+      newStartPointX = newStartPointX + 1;
       var newPosition = checkIfBlankPosition(newStartPointX, startPointY, ship.type, ship.vertical, gameBoard);
       if (newPosition != false && checkHasNearShip(ship.type, newPosition, gameBoard, ramdomRange) == false) {
         return newPosition;
@@ -172,8 +196,8 @@ exports.getPlaceShips = (req, res) => {
     //Try to move to right
     newStartPointX = startPointX;
     newStartPointY = startPointY;
-    while (newStartPointY + ramdomRange < boardWidth) {
-      newStartPointY = newStartPointY + ramdomRange;
+    while (newStartPointY + 1 < boardWidth) {
+      newStartPointY = newStartPointY + 1;
       var newPosition = checkIfBlankPosition(startPointX, newStartPointY, ship.type, ship.vertical, gameBoard);
       if (newPosition != false && checkHasNearShip(ship.type, newPosition, gameBoard, ramdomRange) == false) {
         return newPosition;
@@ -183,8 +207,8 @@ exports.getPlaceShips = (req, res) => {
     //Try to move to left
     newStartPointX = startPointX;
     newStartPointY = startPointY;
-    while (newStartPointY - ramdomRange >= 0) {
-      newStartPointY = newStartPointY - ramdomRange;
+    while (newStartPointY - 1 >= 0) {
+      newStartPointY = newStartPointY - 1;
       var newPosition = checkIfBlankPosition(startPointX, newStartPointY, ship.type, ship.vertical, gameBoard);
       if (newPosition != false && checkHasNearShip(ship.type, newPosition, gameBoard, ramdomRange) == false) {
         return newPosition;
@@ -431,10 +455,12 @@ exports.getPlaceShips = (req, res) => {
   }
 
   //Optimize gameboard
+  console.log(gameBoard);
   optimizeResult = optimizePosition(arrangedShips, gameBoard);
+  console.log(optimizeResult.gameBoard);
 
-  req.session.gameBoard = gameBoard;
-  req.session.ourShips = arrangedShips;
+  req.session.gameBoard = optimizeResult.gameBoard;
+  req.session.ourShips = optimizeResult.ships;
 
   //Return response
   if (params.debug) {

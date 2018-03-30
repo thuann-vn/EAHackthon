@@ -1,7 +1,12 @@
 extends layout
 block content
   h1 The Battleships
-  p.lead 
+  p.lead
+  label Ship Quantity Per Type 
+  input#ships.form-control
+  label Corner Priority 
+  input#corner.form-control
+  br
   button#changePositions.btn.btn-primary Change Positon
   hr
   div#gameboard

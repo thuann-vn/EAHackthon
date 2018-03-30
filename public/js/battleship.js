@@ -7,43 +7,51 @@ var squareSize = 50;
 var gameBoardContainer = document.getElementById("gameboard");
 
 //Call invite to get session
-var inviteParams= {
-	"debug":true,
-	"boardWidth": cols,
-	"boardHeight": rows, 
-	"ships": [
-    {
-      "type": "CV",
-      "quantity": 5
-    },
-    {
-      "type": "BB",
-      "quantity": 5
-    },
-    {
-      "type": "CA",
-      "quantity": 5
-    },
-    {
-      "type": "DD",
-      "quantity": 5
-    },
-    {
-      "type": "OR",
-      "quantity": 5
-    }
-  ]
-};
+var invite=function(){
+	var shipPerTypes = 2;
+	if($('#ships').val() > 0){
+		shipPerTypes= parseInt($('#ships').val());
+	}
+	var inviteParams= {
+		"debug":true,
+		"boardWidth": cols,
+		"boardHeight": rows, 
+		"ships": [
+			{
+				"type": "CV",
+				"quantity": shipPerTypes
+			},
+			{
+				"type": "BB",
+				"quantity": shipPerTypes
+			},
+			{
+				"type": "CA",
+				"quantity": shipPerTypes
+			},
+			{
+				"type": "DD",
+				"quantity": shipPerTypes
+			},
+			{
+				"type": "OR",
+				"quantity": shipPerTypes
+			}
+		]
+	};
+	
+	$.post('/invite', inviteParams, function(result){
+		console.log(result);
+		placeShips();
+	});
+}
 
-$.post('/invite', inviteParams, function(result){
-	console.log(result);
-	placeShips();
-});
 
 //Call place ships
 var placeShips= function(){
 	var placeShipParams = {
 		"debug": true,
+		"cornerPriority": $('#corner').val(),
 		"strategy": 'corner',
 		"player1": "EA4T", 
 		"player2": "EA9T"
@@ -76,8 +84,9 @@ var placeShips= function(){
 $('#changePositions').click(function(e){
 	e.preventDefault();
 	$(gameBoardContainer).html('');
-	placeShips();
+	invite();
 })
+invite();
 
 var initGameBoard= function(gameBoard){
 	// make the grid columns and rows

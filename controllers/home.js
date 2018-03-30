@@ -11,7 +11,7 @@ const strategyTypes= {
   'Corner': 'corner'
 }
 
-const cornerPriority = [shipTypes.Destroyer,shipTypes.Cruiser, shipTypes.BattleShip];
+cornerPriority = [shipTypes.Destroyer,shipTypes.Cruiser, shipTypes.BattleShip];
 
 /**
  * GET /
@@ -56,7 +56,12 @@ exports.getPlaceShips = (req, res) => {
   var boardHeight = parseInt(req.session.boardHeight);
   var boardWidth = parseInt(req.session.boardWidth);
 
-  var strategyType = params.strategy; //'Random', 'Corner'
+  cornerPriority = params.cornerPriority;
+
+  if(cornerPriority){
+    var strategyType = strategyTypes.Corner; //'Random', 'Corner'
+    cornerPriority = cornerPriority.split(','); //'Random', 'Corner'
+  }
 
   //Check if all ship is optimized
   var checkIfAllShipIsOptimized = function(ships, gameBoard, ramdomRange){
@@ -467,7 +472,10 @@ exports.getPlaceShips = (req, res) => {
   var getRandomCoordinate = function (shipType, verticalDirection, gameBoard) {
     var isValid = false;
     var connerTried = 0;
-    while (!isValid) {
+    var triedToArrange = 0;
+    while (!isValid && triedToArrange<=10) {
+      triedToArrange++;
+
       var minX = 0;
       var maxX = req.session.boardHeight - 1;
       var x = Math.floor(Math.random() * (maxX - minX)) + minX;
@@ -560,13 +568,17 @@ exports.getPlaceShips = (req, res) => {
   var arrangedShips = [];
   var arrangeShipTriedCount = 0;
 
-  while (!gameBoard) {
+  while (!gameBoard && arrangeShipTriedCount<=10) {
     arrangeShipTriedCount++;
     var result = arrangeShips(arrangeShipTriedCount);
     if (result != false) {
       gameBoard = result.gameBoard;
       arrangedShips = result.ships;
     }
+  }
+
+  if(!gameBoard && arrangeShipTriedCount>=10){
+    res.status(500);
   }
 
   //Optimize gameboard

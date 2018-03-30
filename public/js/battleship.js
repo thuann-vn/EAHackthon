@@ -14,23 +14,23 @@ var inviteParams= {
 	"ships": [
     {
       "type": "CV",
-      "quantity": 2
+      "quantity": 5
     },
     {
       "type": "BB",
-      "quantity": 2
+      "quantity": 5
     },
     {
       "type": "CA",
-      "quantity": 2
+      "quantity": 5
     },
     {
       "type": "DD",
-      "quantity": 2
+      "quantity": 5
     },
     {
       "type": "OR",
-      "quantity": 2
+      "quantity": 5
     }
   ]
 };

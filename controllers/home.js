@@ -1,3 +1,18 @@
+
+const shipTypes = {
+  'Carrier' : 'CV', //5 Pieces
+  'BattleShip': 'BB',//4 Pieces
+  'Cruiser': 'CA',//3 Pieces
+  'Destroyer': 'DD',//2 Pieces
+  'Oilrig' : 'OR'//Square
+}
+const strategyTypes= {
+  'Normal': 'normal',
+  'Corner': 'corner'
+}
+
+const cornerPriority = [shipTypes.Destroyer,shipTypes.Cruiser, shipTypes.BattleShip];
+
 /**
  * GET /
  * Home page.
@@ -41,46 +56,73 @@ exports.getPlaceShips = (req, res) => {
   var boardHeight = parseInt(req.session.boardHeight);
   var boardWidth = parseInt(req.session.boardWidth);
 
+  var strategyType = params.strategy; //'Random', 'Corner'
+
+  //Check if all ship is optimized
+  var checkIfAllShipIsOptimized = function(ships, gameBoard, ramdomRange){
+    for (var i = 0; i < ships.length; i++) {
+      var ship =ships[i];
+      if(checkHasNearShip(ship.type, ship.coordinates, gameBoard, ramdomRange)){
+        console.log('Not Optimized Yet');
+        return false;
+      }
+    }
+    return true;
+  }
+
   //Opitimize position
   var optimizePosition = function (arrangedShips, gameBoard) {
     try{
-      var results = [];
-      for (var i = 0; i < arrangedShips.length; i++) {
-        var ship = arrangedShips[i];
-        var ramdomRange = Math.random() >= 0.5 ? 2 : 1;
-        
-        //Try to move to 2 range
-        var newCoordinates = swapPositions(ship, gameBoard, 2);
-        
-        //Check if new Coodinates is valid
-        var isMoved = false;
-        for (var j = 0; j < newCoordinates.length; j++) {
-          if(newCoordinates[j]!=ship.coordinates[j]){
-            isMoved = true;
-            break;
+      var triedToOpimize =0;
+      while(!checkIfAllShipIsOptimized(arrangedShips, gameBoard, 1) && triedToOpimize<=5){
+        var results = [];
+        for (var i = 0; i < arrangedShips.length; i++) {
+          var ship = arrangedShips[i];
+  
+          if(ship.isOptimized){
+            continue;
           }
+  
+          var ramdomRange = Math.random() >= 0.5 ? 2 : 1;
+          
+          //Try to move to 2 range
+          var newCoordinates = swapPositions(ship, gameBoard, 2);
+          
+          //Check if new Coodinates is valid
+          var isMoved = false;
+          for (var j = 0; j < newCoordinates.length; j++) {
+            if(newCoordinates[j]!=ship.coordinates[j]){
+              isMoved = true;
+              break;
+            }
+          }
+  
+          //Check arround ship
+          if(isMoved == false){
+            newCoordinates = swapPositions(ship, gameBoard, 1);
+          }
+  
+          //Update old coorinates to zero
+          for (var j = 0; j < ship.coordinates.length; j++) {
+            var coordinate = ship.coordinates[j];
+            gameBoard[coordinate[0]][coordinate[1]] = 0;
+          }
+    
+          // Update current coorinates
+          for (var j = 0; j < newCoordinates.length; j++) {
+            var coordinate = newCoordinates[j];
+            gameBoard[coordinate[0]][coordinate[1]] = 1;
+          }
+    
+          ship.coordinates=newCoordinates;
         }
 
-        //Check arround ship
-        if(isMoved == false){
-          var newCoordinates = swapPositions(ship, gameBoard, 1);
-        }
-
-        //Update old coorinates to zero
-        for (var j = 0; j < ship.coordinates.length; j++) {
-          var coordinate = ship.coordinates[j];
-          gameBoard[coordinate[0]][coordinate[1]] = 0;
-        }
-  
-        // Update current coorinates
-        for (var j = 0; j < newCoordinates.length; j++) {
-          var coordinate = newCoordinates[j];
-          gameBoard[coordinate[0]][coordinate[1]] = 1;
-        }
-  
-        ship.coordinates=newCoordinates;
+        triedToOpimize ++ ;
+        console.log(triedToOpimize);
+        console.log(gameBoard);
       }
       return {gameBoard: gameBoard, ships:arrangedShips};
+
     }catch(ex){
       console.warn('Error on optimize ships',[ex]);
       return {gameBoard: gameBoard, ships:arrangedShips};
@@ -97,10 +139,17 @@ exports.getPlaceShips = (req, res) => {
   }
 
   //get arround points matrix
-  var checkHasNearShip = function (shipType, coordinates, gameBoard, range) {
+  var checkHasNearShip = function (shipType, coordinates, gameBoard, range, oldCoordinates) {
     var results = [];
     var maxX = boardHeight - 1;
     var maxY = boardWidth - 1;
+
+    if(oldCoordinates){
+      for(var i=0; i<oldCoordinates.length; i++){
+        var coordinate = oldCoordinates[i];
+        gameBoard[coordinate[0]][coordinate[1]] = 0;
+      }
+    }
 
     var hasNearShip = false;
     for (var i = 0; i < coordinates.length; i++) {
@@ -158,6 +207,23 @@ exports.getPlaceShips = (req, res) => {
             return true;
           }
         }
+        
+
+
+        //Check prev point has ship
+        if (pointY <= maxY && checkPrevPointX >= 0) {
+          if (!checkCoordinateInArray(checkPrevPointX, pointY, coordinates) && gameBoard[checkPrevPointX][pointY] == 1) {
+            return true;
+          }
+        }
+        
+
+        //Check prev point has ship
+        if (pointY <= maxY && checkNextPointX <= maxX) {
+          if (!checkCoordinateInArray(checkNextPointX, pointY, coordinates) && gameBoard[checkNextPointX][pointY] == 1) {
+            return true;
+          }
+        }
       }
     }
     return false;
@@ -171,49 +237,57 @@ exports.getPlaceShips = (req, res) => {
     var newStartPointX = startPointX;
     var newStartPointY = startPointY;
 
-    //Check if the position can move to
-    //Try to move to the top
-    while (newStartPointX - 1 >= 0) {
-      newStartPointX = newStartPointX - 1;
-      var newPosition = checkIfBlankPosition(newStartPointX, startPointY, ship.type, ship.vertical, gameBoard);
-      if (newPosition != false && checkHasNearShip(ship.type, newPosition, gameBoard, ramdomRange) == false) {
-        return newPosition;
-      }
-    };
+
+    //If the strantegy is corner, just move the  ship to top or bottom for vertical
+    if(strategyType!=strategyTypes.Corner || (strategyType==strategyTypes.Corner && cornerPriority.indexOf(ship.type)<0) || (strategyType==strategyTypes.Corner && cornerPriority.indexOf(ship.type)>=0  && ship.vertical)){
+      //Check if the position can move to
+      //Try to move to the top
+      while (newStartPointX - 1 >= 0) {
+        newStartPointX = newStartPointX - 1;
+        var newPosition = checkIfBlankPosition(newStartPointX, startPointY, ship.type, ship.vertical, gameBoard, ship.coordinates);
+        if (newPosition != false && checkHasNearShip(ship.type, newPosition, gameBoard, ramdomRange, ship.coordinates) == false) {
+          return newPosition;
+        }
+      };
 
 
-    //Try to move to the bottom
-    newStartPointX = startPointX;
-    newStartPointY = startPointY;
-    while (newStartPointX + 1 < boardHeight) {
-      newStartPointX = newStartPointX + 1;
-      var newPosition = checkIfBlankPosition(newStartPointX, startPointY, ship.type, ship.vertical, gameBoard);
-      if (newPosition != false && checkHasNearShip(ship.type, newPosition, gameBoard, ramdomRange) == false) {
-        return newPosition;
-      }
-    };
+      //Try to move to the bottom
+      newStartPointX = startPointX;
+      newStartPointY = startPointY;
+      while (newStartPointX + 1 < boardHeight) {
+        newStartPointX = newStartPointX + 1;
+        var newPosition = checkIfBlankPosition(newStartPointX, startPointY, ship.type, ship.vertical, gameBoard, ship.coordinates);
+        if (newPosition != false && checkHasNearShip(ship.type, newPosition, gameBoard, ramdomRange, ship.coordinatese) == false) {
+          return newPosition;
+        }
+      };
+    }
 
-    //Try to move to right
-    newStartPointX = startPointX;
-    newStartPointY = startPointY;
-    while (newStartPointY + 1 < boardWidth) {
-      newStartPointY = newStartPointY + 1;
-      var newPosition = checkIfBlankPosition(startPointX, newStartPointY, ship.type, ship.vertical, gameBoard);
-      if (newPosition != false && checkHasNearShip(ship.type, newPosition, gameBoard, ramdomRange) == false) {
-        return newPosition;
-      }
-    };
+    //If the strantegy is corner, just move the  ship to left or right for horizon
+    if(strategyType!=strategyTypes.Corner || (strategyType==strategyTypes.Corner && cornerPriority.indexOf(ship.type)<0) || (strategyType==strategyTypes.Corner && cornerPriority.indexOf(ship.type)>=0 && !ship.vertical)){
+      //Try to move to right
+      newStartPointX = startPointX;
+      newStartPointY = startPointY;
+      while (newStartPointY + 1 < boardWidth) {
+        newStartPointY = newStartPointY + 1;
+        var newPosition = checkIfBlankPosition(startPointX, newStartPointY, ship.type, ship.vertical, gameBoard, ship.coordinates);
+        if (newPosition != false && checkHasNearShip(ship.type, newPosition, gameBoard, ramdomRange, ship.coordinates) == false) {
+          return newPosition;
+        }
+      };
 
-    //Try to move to left
-    newStartPointX = startPointX;
-    newStartPointY = startPointY;
-    while (newStartPointY - 1 >= 0) {
-      newStartPointY = newStartPointY - 1;
-      var newPosition = checkIfBlankPosition(startPointX, newStartPointY, ship.type, ship.vertical, gameBoard);
-      if (newPosition != false && checkHasNearShip(ship.type, newPosition, gameBoard, ramdomRange) == false) {
-        return newPosition;
-      }
-    };
+      //Try to move to left
+      newStartPointX = startPointX;
+      newStartPointY = startPointY;
+      while (newStartPointY - 1 >= 0) {
+        newStartPointY = newStartPointY - 1;
+        var newPosition = checkIfBlankPosition(startPointX, newStartPointY, ship.type, ship.vertical, gameBoard, ship.coordinates);
+        if (newPosition != false && checkHasNearShip(ship.type, newPosition, gameBoard, ramdomRange, ship.coordinates) == false) {
+          return newPosition;
+        }
+      };
+    }
+    
 
     return ship.coordinates;
   }
@@ -228,21 +302,24 @@ exports.getPlaceShips = (req, res) => {
     //if has near ship -> rearrange the ship
     if (hasNearShip) {
       //Try to move to another position
-      var newCoordinates = getSwapPositions(ship, gameBoard, ramdomRange);
-
-
-      //Update
-      coordinates =newCoordinates;
+      coordinates = getSwapPositions(ship, gameBoard, ramdomRange);
     }
     return coordinates;
   }
 
   // get position list can use
-  var checkIfBlankPosition = function (startPointX, startPointY, shipType, verticalDirection, gameBoard) {
+  var checkIfBlankPosition = function (startPointX, startPointY, shipType, verticalDirection, gameBoard, oldCoordinates) {
     try {
-      if (!verticalDirection) {
+      if(oldCoordinates){
+        for(var i=0; i<oldCoordinates.length; i++){
+          var coordinate = oldCoordinates[i];
+          gameBoard[coordinate[0]][coordinate[1]] = 0;
+        }
+      }
+
+      if (verticalDirection) {
         switch (shipType) {
-          case 'BB': //Ship 4 pieces
+          case shipTypes.BattleShip: //Ship 4 pieces
             if (startPointX + 3 > boardHeight - 1) {
               return false;
             }
@@ -256,7 +333,7 @@ exports.getPlaceShips = (req, res) => {
               ]
             };
             break;
-          case 'DD': //Ship 2 pieces
+          case shipTypes.Destroyer: //Ship 2 pieces
             if (startPointX + 1 > boardHeight - 1) {
               return false;
             }
@@ -268,7 +345,7 @@ exports.getPlaceShips = (req, res) => {
             };
             break;
 
-          case 'CA': //Ship 3 pieces
+          case shipTypes.Cruiser: //Ship 3 pieces
             if (startPointX + 2 > boardHeight - 1) {
               return false;
             }
@@ -280,7 +357,7 @@ exports.getPlaceShips = (req, res) => {
               ]
             };
             break;
-          case 'CV': //Ship 5 pieces
+          case shipTypes.Carrier: //Ship 5 pieces
             if (startPointX + 3 > boardHeight - 1 || startPointY - 1 < 0) {
               return false;
             }
@@ -295,7 +372,7 @@ exports.getPlaceShips = (req, res) => {
               ]
             }
             break; 2
-          case 'OR': //Ship square
+          case shipTypes.Oilrig: //Square
             if (startPointX + 1 > boardHeight - 1 || startPointY + 1 > boardWidth - 1) {
               return false;
             }
@@ -312,7 +389,7 @@ exports.getPlaceShips = (req, res) => {
         }
       } else {
         switch (shipType) {
-          case 'BB': //Ship 4 pieces
+          case shipTypes.BattleShip: //Ship 4 pieces
             if (startPointY + 3 > boardWidth - 1) {
               return false;
             }
@@ -326,7 +403,7 @@ exports.getPlaceShips = (req, res) => {
               ]
             };
             break;
-          case 'DD': //Ship 2 pieces
+          case shipTypes.Destroyer: //Ship 2 pieces
             if (startPointY + 1 > boardWidth - 1) {
               return false;
             }
@@ -337,7 +414,7 @@ exports.getPlaceShips = (req, res) => {
               ]
             };
             break;
-          case 'CA': //Ship 3 pieces
+          case shipTypes.Cruiser: //Ship 3 pieces
             if (startPointY + 2 > boardWidth - 1) {
               return false;
             }
@@ -349,7 +426,7 @@ exports.getPlaceShips = (req, res) => {
               ]
             };
             break;
-          case 'CV': //Ship 5 pieces
+          case shipTypes.Carrier: //Ship 5 pieces
             if (startPointY + 3 > boardWidth - 1 || startPointX - 1 < 0) {
               return false;
             }
@@ -364,7 +441,7 @@ exports.getPlaceShips = (req, res) => {
               ]
             }
             break;
-          case 'OR': //Ship square
+          case shipTypes.Oilrig: //Ship square
             if (startPointX + 1 > boardHeight - 1 || startPointY + 1 > boardWidth - 1) {
               return false;
             }
@@ -389,6 +466,7 @@ exports.getPlaceShips = (req, res) => {
   //@param direction: 0:Vertical, 1: Horizon
   var getRandomCoordinate = function (shipType, verticalDirection, gameBoard) {
     var isValid = false;
+    var connerTried = 0;
     while (!isValid) {
       var minX = 0;
       var maxX = req.session.boardHeight - 1;
@@ -398,7 +476,37 @@ exports.getPlaceShips = (req, res) => {
       var maxY = req.session.boardWidth - 1;
       var y = Math.floor(Math.random() * (maxY - minY)) + minY;
 
+      if(strategyType == strategyTypes.Corner && cornerPriority.indexOf(shipType)<0){
+        minX = 2;
+        maxX = req.session.boardHeight - 3;
+        x = Math.floor(Math.random() * (maxX - minX)) + minX;
+  
+        minY = 2;
+        maxY = req.session.boardWidth - 3;
+        y = Math.floor(Math.random() * (maxY - minY)) + minY;
+      }
+
+      if(strategyType == strategyTypes.Corner && connerTried<5 && cornerPriority.indexOf(shipType)>=0){
+        if(verticalDirection){
+          var isLeft =  Math.random()>0.5;
+          if(isLeft){
+            y = 0;
+          }else{
+            y = maxY;
+          }
+        }else{
+          var isTop =  Math.random()>0.5;
+          if(isTop){
+            x = 0;
+          }else{
+            x = maxX;
+          }
+        }
+        connerTried++;
+      }
+
       var position = checkIfBlankPosition(x, y, shipType, verticalDirection, gameBoard);
+
       if (position) {
         return position;
       }
@@ -407,6 +515,12 @@ exports.getPlaceShips = (req, res) => {
   }
 
   var ships = req.session.ships;
+  //If the strategy is corner, priorty set for the smaller ship
+  ships.sort(function (a, b) {
+    var priorties = [shipTypes.Destroyer, shipTypes.Cruiser, shipTypes.BattleShip, shipTypes.Carrier, shipTypes.Oilrig];
+    return priorties.indexOf(a.type) - priorties.indexOf(b.type);
+  });
+
   //Arrage ships, return false if can not arrange a ship, return object have gameboard and ships if valid
   var arrangeShips = function (triedTime) {
     var arrangedShips = [];
@@ -423,12 +537,13 @@ exports.getPlaceShips = (req, res) => {
 
             gameBoard[x][y] = 1;
           }
-
+          
           //Add to response
           arrangedShips.push({
             'type': ships[k].type,
             'coordinates': position,
-            'vertical': verticalDirection
+            'vertical': verticalDirection,
+            'isOptimized': false
           });
         } else {
           console.log('Arrange Ships Failed (' + triedTime + ' times)');

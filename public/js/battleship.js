@@ -30,7 +30,7 @@ var inviteParams= {
     },
     {
       "type": "OR",
-      "quantity": 1
+      "quantity": 2
     }
   ]
 };
@@ -44,6 +44,7 @@ $.post('/invite', inviteParams, function(result){
 var placeShips= function(){
 	var placeShipParams = {
 		"debug": true,
+		"strategy": 'corner',
 		"player1": "EA4T", 
 		"player2": "EA9T"
 	}

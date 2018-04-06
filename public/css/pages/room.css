@@ -1,0 +1,339 @@
+.navbar{
+    position: relative;
+    z-index: 1000;
+}
+
+.navbar .navbar-nav > li > a{
+    color: #fff;
+}
+
+.navbar .navbar-nav > li.login > a{
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-top: 10px;
+    background-color: #e7e7e7c2;
+}
+.navbar .navbar-nav li.username > a {
+    border-radius: 4px;
+    color: #555;
+    background-color: #e7e7e7c2;
+}
+
+.page-content{
+    margin-top: -50px;
+}
+
+.popular-rooms {
+    margin-left: -15px;
+    margin-right: -15px;
+}
+
+.popular-rooms .room {
+    width: 33.33%;
+    float: left;
+    padding-left: 15px;
+    padding-right: 15px;
+    transition: 300ms ease;
+}
+
+.popular-rooms .room:hover {
+    opacity: .8;
+    cursor: pointer;
+}
+
+.room .room-wraper {
+    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+    border-radius: 6px;
+    background: #fff;
+    padding: 20px;
+    position: relative;
+    transition: 300ms ease;
+    min-height: 150px;
+}
+
+.room:hover .room-wraper {
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+}
+
+
+.room .room-image {
+    position: absolute;
+    left: 20px;
+    top: -20px;
+}
+
+.room .room-image img {
+    border: 3px solid #fff;
+    background: #fff;
+    height: 48px;
+    border-radius: 100%;
+}
+
+.room .room-image .room-rating {
+    position: absolute;
+    background-color: #FFBF00;
+    color: #fff;
+    display: inline-block;
+    padding: 0px 10px;
+    white-space: nowrap;
+    border-radius: 20px;
+    border: 2px solid #fff;
+    font-size: 11px;
+    top: 10px;
+    left: 55px;
+}
+
+.room .room-name {
+    padding-left: 100px;
+    font-weight: bold;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #EFF3F7;
+}
+
+.room .room-name h3 {
+    margin-bottom: 0;
+    color: #122D41;
+}
+
+.room .room-players {
+    margin: 0;
+}
+
+.room .room-players img {
+    width: 32px;
+    border: 3px solid #fff;
+    margin-left: -15px;
+}
+
+.room .room-players span {
+    width: 32px;
+    height: 32px;
+    background-color: #00C5FD;
+    border-radius: 100%;
+    border: 3px solid #fff;
+    margin-left: -15px;
+    display: inline-block;
+    color: #fff;
+    font-weight: bold;
+    line-height: 27px;
+    font-size: 12px;
+}
+
+.room .room-players strong {
+    float: right;
+    line-height: 32px;
+}
+
+.room .room-players img:first-child {
+    margin-left: 0;
+}
+
+.room .button-go {
+    color: #fff;
+    display: inline-block;
+    padding: 2px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.room .button-go.disabled {
+    background-color: #efefef;
+    padding: 2px 10px;
+    color: #ccc;
+}
+
+/*Players*/
+.room-players {
+}
+
+.room-players .player {
+    width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    transition: 300ms ease;
+    border-bottom: 1px solid #efefef;
+    background: #fff;
+}
+.room-players .player:first-child{
+    border-top: 1px solid #efefef;
+}
+.room-players .player:last-child{
+    border-bottom: 0;
+}
+.room-players .player:hover {
+    cursor: pointer;
+    background-color: #efefef;
+}
+
+.player .player-wraper {
+    position: relative;
+    transition: 300ms ease;
+    padding: 5px 10px;
+}
+
+.player img {
+    width: 36px;
+    border-radius: 100%;
+}
+
+.player .player-image {
+    position: absolute;
+    left: 0px;
+    top: 5px;
+}
+
+.player .player-image img {
+    border: 3px solid #fff;
+    background: #fff;
+}
+
+.player .player-image .player-rating {
+    position: absolute;
+    background-color: #FFBF00;
+    color: #fff;
+    display: inline-block;
+    padding: 0px 10px;
+    white-space: nowrap;
+    border-radius: 20px;
+    border: 2px solid #fff;
+    font-size: 11px;
+    top: 0;
+    left: 50px;
+}
+.player .player-image .player-online {
+    position: absolute;
+    background-color: #FFBF00;
+    color: #fff;
+    display: inline-block;
+    white-space: nowrap;
+    border-radius: 20px;
+    border: 2px solid #fff;
+    font-size: 11px;
+    top: 0;
+    left: 23px;
+    width: 14px;
+    height: 14px;
+    padding: 0;
+}
+
+
+.player .player-name {
+    padding-left: 30px;
+    font-weight: bold;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.player .player-name h3 {
+    margin-bottom: 0;
+    color: #122D41;
+}
+.player .player-name p{
+    margin-bottom: 0;
+}
+
+.player .player-buttons {
+    position: absolute;
+    right: 0;
+    top: 10px;
+}
+
+.player-buttons .btn {
+    border-radius: 24px;
+    font-size: 11px;
+}
+
+/*Fightings*/
+.room-fightings{
+    margin: 0;
+    padding: 0;
+}
+.room-fightings tr > td{
+
+}
+
+.room-fightings .fighting-item.disabled{
+    opacity: .5;
+}
+.form-create-table input{
+    width: 100%;
+}
+/*Room join form*/
+.room-join-form {
+    background-image: url(/assets/img/room_banner.jpg);
+    padding: 40px;
+    margin-top: 40px;
+    margin-bottom: 0;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: #464541;
+    border-radius: 4px;
+    color: #fff;
+}
+
+.room-join-form .text {
+    padding-left: 250px;
+}
+
+.room-join-form h2 {
+    color: #fff;
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+/*Leave form*/
+.leave-form {
+    text-align: right;
+}
+
+.leave-form button {
+    border-radius: 20px;
+    padding: 7px 20px;
+}
+
+.room-content-wraper{
+    margin-top: -40px;
+    position: relative;
+    z-index: 99;
+}
+.room{
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 10px 20px 20px 20px;
+    margin-bottom: 40px;
+    position: relative;
+}
+.room .section-title{
+    margin-top: 0;
+    padding-left: 56px;
+    margin-bottom: 30px;
+}
+
+.table-room-players, .table-room-fightings{
+    margin-bottom: 40px;
+}
+.table-room-players td, .table-room-fightings td{
+    vertical-align: middle !important;
+}
+
+.table-room-players th, .table-room-fightings th{
+    background-color: #f5f6fa;
+    border-top: 1px solid #eee !important;
+    border-bottom: 0 !important;
+}
+.table-room-players img{
+    height: 32px;
+    border-radius: 4px;
+}
+
+.table-room-fightings .fighting-player img{
+    display: inline-block;
+    margin-right: 5px;
+    border-radius: 3px;
+}
+
+.table-room-fightings .fighting-item{
+    cursor: pointer;
+}

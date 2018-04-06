@@ -1,0 +1,338 @@
+/*Banner*/
+#table-header{
+    height: 100px;
+    position: relative;
+}
+#table-header:after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 1;
+    background-color: rgba(0,0,0,.7);
+}
+#table-header:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 1;
+    background: url(/assets/img/banner.jpg);
+    background-size: cover;
+    background-position: center center;
+}
+.main-banner{
+    min-height: 160px;
+    position: relative;
+    border-radius: 4px;
+    z-index: 2;
+    overflow: hidden;
+}
+.main-banner .logo{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.main-banner .user-nav{
+    padding: 20px;
+    position: absolute;
+    z-index: 10;
+    right: 0;
+}
+.main-banner .user-nav ul, .main-banner .user-nav li{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.main-banner .user-nav li a{
+    color: #333;
+    background-color: rgba(255,255,255,.8);
+    padding: 8px 20px;
+    border-radius: 4px;
+}
+
+/*Player*/
+.player{
+    text-align: left;
+}
+.player a{
+    display: block;
+    border-radius: 4px;
+    opacity: .9;
+    font-size: 16px;
+    position: relative;
+    min-width: 164px;
+    margin: 10px 0;
+}
+
+.player a:hover{
+    opacity: 1;
+}
+.player img{
+    height: 32px;
+    width: 32px;
+    border-radius: 4px;
+    margin: 0 auto;
+}
+.player .timer{
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #fff;
+    color: #333;
+    padding: 8px 24px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: bold;
+    transform: scale(.9);
+
+    transition: all 300ms ease;
+}
+.player .timer.active{
+    color: #fff;
+    background: #337ab7;
+    transform: scale(1);
+    right: 4px;
+}
+/*Panels*/
+.panel{
+    margin-top: 10px;
+}
+.panel .panel-heading{
+    background-color: #f9f9f9;
+    padding: 10px 10px;
+    border: 0;
+}
+.panel .panel-title{
+    color: #797776;
+    font-size: 14px;
+}
+.panel .panel-body{
+    padding: 0;
+}
+/*Table*/
+.table-wrapper{
+    padding: 50px 0;
+}
+
+.table-wrapper .nav-tabs{
+    margin-bottom: 0;
+}
+.table-wrapper .nav-tabs>li>a{
+    padding: 10px 20px;
+}
+
+.table-wrapper .tab-content{
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-top: 0;
+    border-radius: 2px;
+}
+
+.table-wrapper .chat_window{
+    border-radius: 0px;
+    height: auto;
+    min-height: 200px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: none;
+}
+
+
+.table-wrapper .bottom_wrapper{
+    padding: 10px 10px 0 10px;
+}
+.table-wrapper .messages{
+    overflow: auto;
+    height: 225px;
+    padding-top: 35px;
+}
+
+.table-wrapper .bottom_wrapper .message_input_wrapper{
+    width: 100%;
+    height: 40px;
+    border-radius: 3px;
+    border-color: #efefef;
+}
+
+.messages .message.chat_intro{
+    color: #312e2b;
+    line-height: 18px;
+    font-size: 13px;
+    opacity: 1;
+    top: 0;
+    margin: 0;
+    position: absolute;
+    background: rgba(255,255,255,.8);
+    margin-left: 0;
+    padding: 7px;
+    z-index: 9;
+}
+.messages .message .avatar{
+    display: none;
+}
+
+.messages .message .sender{
+    color: #333;
+    display: inline-block;
+}
+.messages .message .text{
+    display: inline-block;
+}
+.table-summary{
+
+}
+
+.table-summary .table{
+    margin-bottom: 0;
+}
+
+.table-summary .replay .moves {
+    border-top: 1px solid #e2e2e2;
+    border-bottom: 1px solid #e2e2e2;
+    height: 300px;
+    overflow: auto;
+    position: relative;
+    will-change: scroll-position;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    display: flex;
+    flex-flow: row wrap;
+    align-content: flex-start;
+}
+
+.table-summary .replay index,.table-summary .replay move {
+    height: 25px;
+    line-height: 25px;
+}
+
+.table-summary .replay index {
+    display: flex;
+    flex: 0 0 15%;
+    max-width: 15%;
+    line-height: 27px;
+    background: #fbfbfb;
+    justify-content: center;
+    font-family: 'Roboto';
+    font-weight: 300;
+}
+
+.table-summary .replay move {
+    flex: 0 0 42.5%;
+    max-width: 42.5%;
+    box-sizing: border-box;
+    font-family: 'ChessSansPiratf',sans-serif;
+    font-size: 17px;
+    padding-left: 7px;
+}
+
+body.piece_letter .table-summary .replay move {
+    font-family: 'Noto Sans';
+    font-size: 15px;
+}
+
+.table-summary .replay move:not(.empty) {
+    cursor: pointer;
+    transition: background-color 0.13s;
+}
+
+.table-summary .replay move:not(.empty):hover {
+    background: #e6e6e6;
+}
+
+.table-summary .replay move.active,.table-summary .replay move.active::after {
+    color: #d85000!important;
+    font-weight: bold;
+}
+
+.table-summary .result_wrap {
+    width: 100%;
+}
+
+.table-summary .result,.table-summary .status {
+    text-align: center;
+}
+
+.table-summary .result {
+    border-top: 1px solid #ddd;
+    font-weight: bold;
+    font-size: 30px;
+    padding: 5px 0 3px 0;
+    /* width: 100%; */
+    margin-bottom: 0;
+}
+
+.table-summary .status {
+    font-size: 1em;
+    font-style: italic;
+    padding-bottom: 7px;
+}
+.table-summary .status span{
+    display: block;
+}
+.table-summary .replay .buttons {
+    border-top: 1px solid #e2e2e2;
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+}
+.table-summary .replay .buttons button{
+    background-color: transparent;
+    border: none;
+    font-size: 14px;
+    color: #8c8a88;
+}
+.table-summary .replay .buttons button[disabled]{
+    opacity: .5;
+}
+.table-summary .replay .fbt {
+    padding: 5px 10px;
+}
+
+.table-summary .replay .noop {
+    width: 30px;
+}
+
+.table-summary .result-wrap{
+    width: 100%;
+}
+.table-summary .buttons{
+    text-align: center;
+}
+.table-summary .buttons a{
+    color: #747474;
+    font-size: 18px;
+    padding: 8px 17px;
+    display: inline-block;
+}
+.table-summary .buttons a:hover{
+    background-color: #747474;
+    color: #fff;
+}
+#start-game{
+    color: #fff;
+    margin: 20px;
+}
+.moves move.active{
+    background-color: #ccc;
+}
+
+@keyframes connecting {
+    0% {
+        opacity: 0.1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+
+    100% {
+        opacity: 0.1;
+    }
+}

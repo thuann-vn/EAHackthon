@@ -19,6 +19,7 @@ const expressValidator = require('express-validator');
 const expressStatusMonitor = require('express-status-monitor');
 const sass = require('node-sass-middleware');
 const multer = require('multer');
+const socketIO = require('socket.io');
 
 const upload = multer({ dest: path.join(__dirname, 'uploads') });
 
@@ -115,14 +116,6 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }))
 app.get('/', homeController.index);
 
 /**
- * API routes.
- */
-app.post('/invite', homeController.getInvite);
-app.post('/place-ships', homeController.getPlaceShips);
-app.post('/shoot', homeController.getShoot);
-app.post('/notify', homeController.getNotify);
-
-/**
  * Error Handler.
  */
 app.use(errorHandler());
@@ -130,9 +123,18 @@ app.use(errorHandler());
 /**
  * Start Express server.
  */
-app.listen(app.get('port'), () => {
-  console.log('%s App is running at http://localhost:%d in %s mode', chalk.green('✓'), app.get('port'), app.get('env'));
-  console.log('  Press CTRL-C to stop\n');
-});
+
+var io = socketIO.listen(
+  app.listen(app.get('port'), () => {
+    console.log('%s App is running at http://localhost:%d in %s mode', chalk.green('✓'), app.get('port'), app.get('env'));
+    console.log('  Press CTRL-C to stop\n');
+  })
+);
+
+
+/**
+ * Start game socket engine
+ */
+const commonSocket =  require('./services/socket')(app, io, mongoose);
 
 module.exports = app;

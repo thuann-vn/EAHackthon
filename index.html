@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View data file</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+  <style>
+  .container {
+        max-width: 100%;
+        width: 1140px;
+    }
+  .container {
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    #show_detail.modal .modal-dialog {
+        width: 80%;
+     }
+
+</style>
+ <script src="jquery.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+  <script src="client.js"></script>
+  <link rel="stylesheet" href="assets/css/chessboard-0.3.0.css">
+  <script src="assets/js/chess.js"></script>
+  <script src="assets/js/chessboard-0.3.0.js"></script>
+
+</head>
+<body>
+  <div class="container">
+    <div id="board" style="width: 400px"></div>
+<p>Status: <span id="status"></span></p>
+<p>FEN: <span id="fen"></span></p>
+<p>PGN: <span id="pgn"></span></p>
+    <div class="row-fluid">
+        <div class="span12">
+                <div class="form-group">
+                    <label for="content">Path file</label>
+                    <input class="form-control" id="content" style="width:600px;"   placeholder="Path file" type="input">
+                </div>
+                <div class="form-group">
+                    <label for="content">Time end</label>
+                    <input class="form-control datepicker" id="dt_end" style="width:300px;"  placeholder="Time end" type="input">
+                </div>
+                <div class="form-group">
+                    <label for="content">Minutes</label>
+                    <input class="form-control " id="dt_minute"  style="width:300px;" placeholder="Minutes" type="number">
+                </div>
+            <button onclick="client.send_data();" class="btn btn-primary">Search</button>
+
+        </div>
+    </div>
+    <br/>
+    <div class="row-fluid">
+
+        <div id="content" class="span12">
+
+
+            <div class="well span3" style="text-align: center;">
+                    <h3>Online now</h3>
+                    <p id="connections" style="font-size: 96px;line-height: 96px;">0</p>
+                    <h5>Persons are accessing web</h5>
+            </div>
+
+            <div class="span9">
+
+                <legend>Page Views</legend>
+                <div class="row-fluid">
+                    <div style="height: 600px;
+                            overflow: auto;
+                            color: black;
+">
+                        <table id="visits" class="table table-bordered table-striped table-condensed">
+                            <thead>
+                                <tr>
+                                    <!-- <td>URL</td> -->
+                                    <td>IP</td>
+                                    <td > <i class="glyphicon glyphicon-arrow-up"></i><i class="glyphicon glyphicon-arrow-down"></i> &nbsp;Count</td>
+                                    <!-- <td>Last Timestamp </td> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+
+
+</div>
+
+  <script>
+
+
+</script>
+<div class="modal fade adminmng" id="show_detail" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+            </div>
+            <div class="modal-body">
+                <h4 class="text-center">Detail IP: <label class="ip"><label></h4>
+                <!--<h4 class="text-center">Total Count: <label class="total_count">0<label></h4>-->
+                <form onsubmit="return false;">
+                    <div class="row-fluid">
+                        <div class="span12">
+
+                                <div class="form-group">
+                                    <label for="content">Time end</label>
+                                    <input class="form-control datepicker" id="dt_end_detail" style="width:300px;"  placeholder="Time end" type="input">
+                                </div>
+                                <div class="form-group">
+                                    <label for="content">Minutes</label>
+                                    <input class="form-control " id="dt_minute_detail"  style="width:300px;" placeholder="Minutes" type="number">
+                                </div>
+                            <button onclick="client.send_data_detail();" class="btn btn-primary">Search</button>
+
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row-fluid">
+                        <div style="
+                            height: 500px;
+                            overflow: auto;
+                            color: black;
+                            ">
+                             <table id="visits_detail" class="table table-bordered table-striped table-condensed">
+                                <thead>
+                                    <tr>
+                                        <td>URL</td>
+                                        <!-- <td>IP</td> -->
+                                        <td  class="text-center accordion-toggle" onclick="client.sort_data_detail();"><i class="glyphicon glyphicon-arrow-up"></i><i class="glyphicon glyphicon-arrow-down"></i> &nbsp;Count</td>
+                                        <td class="text-center">Last Timestamp </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div><!-- /#adminadd -->
+
+</body>
+</html>
+ <script type="text/javascript">
+
+
+  </script>

@@ -22,7 +22,9 @@ const userSchema = new mongoose.Schema({
     gender: String,
     location: String,
     website: String,
-    picture: String
+    picture: String,
+    level: Number,
+    point: Number
   }
 }, { timestamps: true });
 

@@ -1,12 +1,147 @@
 extends layout
+block custom_stylesheets
+  link(rel='stylesheet', href='/css/pages/index.css')
+  
+block custom_scripts
+    script(src='/js/pages/index.js')
+
 block content
-  h1 The Battleships
-  p.lead
-  label Ship Quantity Per Type 
-  input#ships.form-control
-  label Corner Priority 
-  input#corner.form-control
-  br
-  button#changePositions.btn.btn-primary Change Positon
-  hr
-  div#gameboard
+  section#home-banner
+    .container
+      .main-banner
+        .buttons
+          a.background-green(href="#", data-toggle="modal", data-target="#createFighting") 
+            i.fa.fa-gamepad
+            .
+              Create a game
+          if(!user)
+            a.background-blue(href="/login")
+              i.fa.fa-comments-o
+              .
+                Join communication
+            a.background-yellow
+              i.fa.fa-book
+              .
+                Learn to play
+  section#home-content
+    .container
+      .home-content-wraper.clearfix
+        .home-sidebar
+          .sidebar-section.members-stats
+            .member-item.clearfix
+              i.glyphicon.glyphicon-user
+              span.stat Members
+              div.number 0
+              
+            .member-item.clearfix
+              i.glyphicon.glyphicon-queen
+              span.stat Games Today
+              div.number 0
+              
+            .member-item.clearfix
+              i.glyphicon.glyphicon-pawn
+              span.stat Players Online
+              div.number 0
+              
+            .member-item.clearfix
+              i.glyphicon.glyphicon-king
+              span.stat Titled Online
+              div.number 0
+          .sidebar-section.social-likes
+            a(href="https://www.facebook.com/chess", title="Facebook", target="_blank", rel="noopener")
+              i.fa.fa-facebook
+              .
+                660K
+            a(href="https://twitter.com/chesscom", title="Twitter", target="_blank", rel="noopener")
+              i.fa.fa-twitter
+              .
+                74.8K
+            a(href="https://www.youtube.com/user/wwwChesscom", title="Youtube", target="_blank", rel="noopener")
+              i.fa.fa-youtube
+              .
+                140K
+            a(href="https://www.twitch.tv/chess", title="Twitch", target="_blank", rel="noopener")
+              i.fa.fa-twitch
+              .
+                40K
+            a(href="https://www.instagram.com/wwwchesscom", title="Instagram", target="_blank", rel="noopener")
+              i.fa.fa-instagram
+              .
+                660K
+        .home-fightings
+          table.table.table-hover.clearfix
+            thead
+              tr
+                th(width="50")
+                th Player
+                th(width="100") Time
+            tbody
+              - for (var i = 1; i <= 15; i++)
+                tr.fighting-item.disabled
+                  td.text-center
+                    i.glyphicon.glyphicon-king
+                  td.fighting-player
+                  tr.fighting-timer
+
+        if(!user)
+          .home-sidebar
+            .sidebar-section.index-login
+              form.index-login(novalidate="", method="post", action="/member/login")
+                a.btn.btn-primary.btn-large.ull-width(title="Sign Up", href="/register", target="_self") Sign up
+                .separator
+                  p or log in
+                .section-row
+                  input#username.form-control(type="text", name="username", required="required", placeholder="Username/Email")
+                .section-row
+                  input#password.form-control(type="text", name="password", required="required", placeholder="Password")
+                .row
+                  .col-xs-5
+                    label.checkbox-inline
+                      input#_remember_me(type="checkbox", name="remember_me", value="1")
+                      .
+                        Remember
+                  .col-xs-7.forgot-pass-wrapper
+                    a.forgot-pass(href="/forgot", title="Forgot Password?") Forgot Password?
+                    
+                .login-btn
+                  button.btn.btn-large.full-width(type="submit", title="Log In") Log In
+                .separator
+                  p or connect with
+                .social-btns
+                  a.btn.btn-facebook.btn-has-icon(href="/login_facebook", title="Connnect with Facebook")
+                    i.fa.fa-facebook
+                    .
+                      Facebook
+                      
+                  a.btn.btn-google.btn-has-icon(href="/login_google", title="Connnect with Google")
+                    i.fa.fa-google
+                    .
+                      Google
+  
+  <!-- Modal -->
+  #createFighting.modal.fade(tabindex="-1", role="dialog", aria-labelledby="createFightingLabel")
+    .modal-dialog.modal-sm(role="document")
+      .modal-content
+        .modal-header
+          button.close(type="button", data-dismiss="modal", aria-label="Close")
+            span(aria-hidden="true") &times;
+          h4#myModalLabel.modal-title Create fighting
+        .modal-body
+          form#form_create_fighting.form-create-table(name="form_create_fighting", action="/table/create", method="post", novalidate="novalidate", onsubmit="return false;")
+            input#room_id(type="hidden")
+            .form-group
+              label.control-label(for="minutePerSide") Minutes per side
+              div
+                input.form-control(type="number", name="minutePerSide", value="10", required="required")
+            .form-group
+              label.control-label(for="incrementInSeconds") Increment in seconds
+              div
+                input.form-control(type="number", name="incrementInSeconds", value="10", required="required")
+        
+        .modal-footer
+          a.cta.btn.btn-white.form_create_fighting(data-value="w", href = "javascript:;;")
+              White 
+              i.waiting-icon.fa.fa-spin.fa-spinner
+          a.cta.btn.btn-black.form_create_fighting(data-value="b", href = "javascript:;;")
+              Black 
+              i.waiting-icon.fa.fa-spin.fa-spinner

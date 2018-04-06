@@ -1,0 +1,196 @@
+#header{
+    margin: 10px 0;
+}
+main.register {
+    max-width: 600px;
+    padding: 0;
+    margin: 0 auto;
+    margin-top: 100px;
+}
+
+main.register #content {
+    width: 100%!important
+}
+
+main.register #content .section-content {
+    padding: 15px
+}
+
+#content{
+    background: #fff;
+    padding: 0;
+    border-radius: 4px;
+}
+
+.section-wrapper{
+    padding: 30px;
+}
+.new-registrations {
+    color: #fff;
+    font-size: 1.6rem;
+    line-height: 1.1
+}
+
+.new-registrations.wrapper {
+    padding: 15px
+}
+
+.new-registrations h2,.new-registrations i {
+    color: #fff
+}
+
+.new-registrations h2 {
+    font-size: 3.4rem;
+    font-weight: 700;
+    line-height: .75;
+    margin-bottom: 10px
+}
+
+.new-registrations i {
+    font-size: 3.6rem;
+    position: relative;
+    top: -1px;
+    margin-right: 3px
+}
+
+.terms {
+    font-size: 1.2rem;
+    margin-top: 15px;
+    margin-bottom: 30px;
+    color: #312e2b;
+    line-height: 1.4
+}
+
+.privacy-notice {
+    font-size: 1.3rem;
+    background-color: #f1f1f1;
+    border-radius: 0 0 4px 4px
+}
+
+.privacy-notice.wrapper {
+    padding: 15px;
+    margin-top: 15px
+}
+
+.privacy-notice h2 {
+    position: relative;
+    padding: 0 0 15px 35px;
+    margin: 0;
+    color: #26211b
+}
+
+.privacy-notice p {
+    margin: 0 0 15px
+}
+
+.privacy-notice p:last-child {
+    margin-bottom: 0
+}
+
+.privacy-notice i {
+    font-size: 4rem;
+    position: absolute;
+    top: -12px;
+    left: 0;
+    color: #26211b;
+    line-height: 1
+}
+
+@media all and (min-width: 768px) and (max-width:1280px) and (min-device-width:13in),all and (min-width:1240px) {
+    .terms {
+        margin:15px 0 0
+    }
+}
+
+main {
+    color: #5a5855
+}
+
+h5 {
+    font-size: 1.7rem;
+    margin: 25px 0;
+    font-weight: 400
+}
+
+.form-horizontal .control-label {
+    padding-right: 0
+}
+
+.btn.full-width {
+    min-height: 40px;
+    height: auto
+}
+
+.register-form .form-control {
+    padding: 10px;
+    width: 100%;
+    height: auto
+}
+
+.register-form .toggle-pass .toggle-pass-btn {
+    bottom: 7px
+}
+
+.register-form .form-horizontal .control-label.skill-level {
+    padding-top: 2px
+}
+
+.register-form .form-horizontal .control-label:not(.skill-level) {
+    padding-top: 12px
+}
+
+.register-form .btn.full-width {
+    height: 60px
+}
+
+.register-form .form-group.skill-level {
+    padding: 9px 0
+}
+
+.register .btn-has-icon {
+    height: 50px;
+    padding: 6px 0 0 20px;
+    font-size: 1.7rem
+}
+
+.register .btn-has-icon i {
+    top: 14px
+}
+
+.register .social-btns {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: justify;
+    justify-content: space-between
+}
+
+.register .social-btns .btn-has-icon {
+    width: calc(50% - 5px)
+}
+
+.register .social-btns .btn-has-icon:only-child {
+    width: 100%
+}
+
+.profile-picture .img-placeholder {
+    margin-bottom: 15px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 160px;
+    height: 160px;
+    max-width: 100%
+}
+
+.profile-picture .main-img-prev {
+    width: 100%;
+    padding-top: 100%;
+    background-size: cover;
+    background-position: center
+}
+
+@media all and (min-width: 768px) {
+    .profile-picture .img-placeholder {
+        margin-left:0;
+        margin-right: 0
+    }
+}

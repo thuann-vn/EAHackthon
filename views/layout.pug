@@ -6,13 +6,16 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     meta(name='theme-color' content='#4DA5F4')
     meta(name='csrf-token', content=_csrf)
-    title #{title} - Hackathon Starter
+    title #{title} - Chess
     link(rel='shortcut icon', href='/favicon.png')
     link(rel='stylesheet', href='/css/main.css')
+    link(rel='stylesheet', href='/css/app.css')
+    link(rel='stylesheet', href='/css/responsive.css')
 
+    block custom_stylesheets
   body
     include partials/header
-
+  
     .container
       include partials/flash
       block content
@@ -21,5 +24,10 @@ html
 
     script(src='/js/lib/jquery-3.1.1.min.js')
     script(src='/js/lib/bootstrap.min.js')
+    script(src='/js/lib/socket.io.js')
+    script(src='/js/lib/underscore-min.js')
+    script(src='/js/lib/notifications.js')
+    script(src='/js/lib/jquery.cookie.js')
     script(src='/js/main.js')
-    script(src='/js/battleship.js')
+    
+    block custom_scripts
